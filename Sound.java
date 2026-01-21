@@ -225,13 +225,34 @@ public class Sound {
     /*
      * reverse the sound
      */
+    public void swap(int index1, int index2){
+        int i = myData.get(index1);
+        myData.set(index1, myData.get(index2) );
+        myData.set(index2, i);
+
+	
+    }
     public void reverse() {
+        for(int i=0; i<myData.size(); i++){
+            swap(i, myData.size()-1-i);
+        }
+        refresh();
 
 
     }
 
     // this throws out half the data
     public void doublePitch() {
+        ArrayList<Integer> s = new ArrayList<Integer>((myData.size()/2));
+        for (int i=0; i < s.size() ; i++) {
+            int n = myData.get(i*2);
+            s.set(i,  n);
+        }
+        myData.clear();
+        myData.addAll(s);
+        // for(Integer i: s)
+        //     myData.add(i);
+        refresh();
 
     }
 
@@ -239,6 +260,10 @@ public class Sound {
   
     //complete this method
     public void amplify (double amt) {
+        for(int x=0; x<myData.size(); x++){
+            myData.set(x, (int)(myData.get(x)*amt));
+        }
+        refresh();
 
     }
 
@@ -256,6 +281,15 @@ public class Sound {
      * This makes quiet sounds louder while preventing distortion.
      */
     public void normalize() {
+        int max = Math.abs(myData.get(0));
+        for(int x=0; x<myData.size(); x++){
+            if(Math.abs(myData.get(x))>Math.abs(max)){
+                max= Math.abs(myData.get(x));
+            }
+        }
+        double sf = 32000/max*1.0;
+        amplify(sf);
+        refresh();
 
 
     }
