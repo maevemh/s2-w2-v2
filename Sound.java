@@ -334,7 +334,7 @@ public class Sound {
         // cycle - is one complete wave 
         // sampleRate() -- getSamplingRate() - samples per second
         // You need to calculate the samplesPerCycle 
-         double samplesPerCycle = getSamplingRate() / hertz;
+        double samplesPerCycle = getSamplingRate() / hertz;
         for(int i=0; i<myData.size(); i++){
             double positionInCycle = i % samplesPerCycle;
             if(positionInCycle < samplesPerCycle/2){
