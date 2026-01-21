@@ -243,15 +243,11 @@ public class Sound {
 
     // this throws out half the data
     public void doublePitch() {
-        ArrayList<Integer> s = new ArrayList<Integer>((myData.size()/2));
-        for (int i=0; i < s.size() ; i++) {
-            int n = myData.get(i*2);
-            s.set(i,  n);
+        ArrayList<Integer> s = new ArrayList<Integer>();
+        for (int i=0; i < s.size()/2 ; i++) {
+            s.add(myData.get(i*2));
         }
-        myData.clear();
-        myData.addAll(s);
-        // for(Integer i: s)
-        //     myData.add(i);
+        myData = s;
         refresh();
 
     }
@@ -302,6 +298,13 @@ public class Sound {
     // - replace the current value with the new value
     // - refresh!
     public void fadeIn(double seconds) {
+        int numSamplesToFade = (int)(seconds * getSamplingRate());
+        for(int i=0; i<numSamplesToFade && i<myData.size(); i++){
+            double scale = i*1.0/numSamplesToFade;
+            int newValue = (int)(myData.get(i)*scale);
+            myData.set(i, newValue);
+        }
+        refresh();
 
    
     }
@@ -309,6 +312,14 @@ public class Sound {
 
     // Fade out over a duration in seconds
     public void fadeOut(double seconds) {
+        int numSamplesToFade = (int)(seconds * getSamplingRate());
+        int startFadeIndex = myData.size() - numSamplesToFade;
+        for(int i=startFadeIndex; i<myData.size(); i++){
+            double scale = (myData.size() - i)*1.0/numSamplesToFade;
+            int newValue = (int)(myData.get(i)*scale);
+            myData.set(i, newValue);
+        }
+        refresh();
 
     }
 
@@ -323,7 +334,18 @@ public class Sound {
         // cycle - is one complete wave 
         // sampleRate() -- getSamplingRate() - samples per second
         // You need to calculate the samplesPerCycle 
+         double samplesPerCycle = getSamplingRate() / hertz;
+        for(int i=0; i<myData.size(); i++){
+            double positionInCycle = i % samplesPerCycle;
+            if(positionInCycle < samplesPerCycle/2){
+                myData.set(i, maxAmplitude);
+            } else {
+                myData.set(i, -maxAmplitude);
+            }
+        }
+        refresh();
 
+       
     }
 
 
