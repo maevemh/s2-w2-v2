@@ -225,19 +225,14 @@ public class Sound {
     /*
      * reverse the sound
      */
-    public void swap(int index1, int index2){
-        int i = myData.get(index1);
-        myData.set(index1, myData.get(index2) );
-        myData.set(index2, i);
-
-	
-    }
+   
     public void reverse() {
-        for(int i=0; i<myData.size(); i++){
-            swap(i, myData.size()-1-i);
+        ArrayList<Integer> reversed = new ArrayList<Integer>();
+        for (int i = myData.size() - 1; i >= 0; i--) {
+            reversed.add(myData.get(i));
         }
+        setMyData(reversed);
         refresh();
-
 
     }
 
@@ -268,6 +263,13 @@ public class Sound {
      * Used by normalize() to determine the scaling factor.
      */
     private int findAbsoluteMax() {
+        int max = Math.abs(myData.get(0));
+        for(int x=0; x<myData.size(); x++){
+            if(Math.abs(myData.get(x))>Math.abs(max)){
+                max= Math.abs(myData.get(x));
+            }
+        }
+        return max;
   
     }
 
@@ -277,13 +279,7 @@ public class Sound {
      * This makes quiet sounds louder while preventing distortion.
      */
     public void normalize() {
-        int max = Math.abs(myData.get(0));
-        for(int x=0; x<myData.size(); x++){
-            if(Math.abs(myData.get(x))>Math.abs(max)){
-                max= Math.abs(myData.get(x));
-            }
-        }
-        double sf = 32000/max*1.0;
+        double sf = 32000/findAbsoluteMax()*1.0;
         amplify(sf);
         refresh();
 
@@ -317,7 +313,7 @@ public class Sound {
         for(int i=startFadeIndex; i<myData.size(); i++){
             double scale = (myData.size() - i)*1.0/numSamplesToFade;
             int newValue = (int)(myData.get(i)*scale);
-            myData.set(i, newValue);
+            myData.set(i, clampSample(newValue));
         }
         refresh();
 
@@ -353,15 +349,20 @@ public class Sound {
     // Simple echo: single delayed tap mixed with the original
     // What is echo mathically: current value + (decay * past)
     public void echo(double delaySeconds, double decay) {
+         
 
     }
 
     private int clampSample(int value) {
 
-        return -1;
+       if (value > 32767){ 
+            return 32767;
+        }
+        if (value < -32768){ 
+            return -32768;
+        }
+        return value;
     }
-
-
 
 
 } // end Sound class
